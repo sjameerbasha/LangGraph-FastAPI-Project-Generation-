@@ -175,3 +175,6 @@ cython_debug/
 
 # SRS Doc file
 Python Gen AI SRD backend 14th 18th Apr (1).docx
+
+# Project Setup Folder
+project_output
