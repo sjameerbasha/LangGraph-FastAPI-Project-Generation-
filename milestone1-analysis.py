@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq # type: ignore[import]
 from langchain_google_genai import ChatGoogleGenerativeAI # type: ignore[import]
 from dotenv import load_dotenv # type: ignore[import]
-import os
+import os, re, json
 from docx import Document # type: ignore[import]
 
 # Load environment variables from .env file
@@ -47,6 +47,31 @@ def validate_and_read_doc(file_path):
         return text
     except Exception as e:
         return f"Failed to read the document: {e}"
-    
-# check if the file is valid and read it   
-print("Doc reader check: ", validate_and_read_doc("Python Gen AI SRD backend 14th 18th Apr (1).docx"))
+
+# Analyze SRS text with Groq llm
+def analyze_srs(text):
+    prompt = f"""
+Given this Software Requirements Spec (SRS):
+
+{text}
+
+Extract a JSON analysis like:
+{{
+  "endpoints": [{{"method": "GET", "path": "/users", "params": [], "auth_required": true}}],
+  "logic": "...",
+  "schema": [{{"table": "users", "fields": [...], "relationships": [...]}}],
+  "auth": "..."
+}}
+Return the JSON only, no other text. No explanations.
+"""
+    resp = groq_llm.invoke(prompt)
+    # convert the response to json
+    match = re.match(r"```json\n(.*?)\n```", resp.content, re.DOTALL)
+    analysis = match.group(1) if match else resp.content
+    analysis = json.loads(analysis)
+    print("Analysis Done")
+    return analysis
+
+# checking if the llm is able to analyze the srs text
+text = validate_and_read_doc("Python Gen AI SRD backend 14th 18th Apr (1).docx")
+print(analyze_srs(text))
