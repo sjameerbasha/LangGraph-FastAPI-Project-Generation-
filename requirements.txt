@@ -3,3 +3,4 @@ python-dotenv
 google-generativeai
 langgraph
 langchain-google-genai
+python-docx

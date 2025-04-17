@@ -2,6 +2,7 @@ from langchain_groq import ChatGroq # type: ignore[import]
 from langchain_google_genai import ChatGoogleGenerativeAI # type: ignore[import]
 from dotenv import load_dotenv # type: ignore[import]
 import os
+from docx import Document # type: ignore[import]
 
 # Load environment variables from .env file
 load_dotenv() # type: ignore[import]
@@ -35,7 +36,17 @@ groq_llm_70b = ChatGroq(
     api_key = os.getenv("GROQ_API_KEY")
 )
 
-# Check if the LLMs are initialized correctly
-print("Groq LLM with llama-4: ", groq_llm.invoke("Hello, how are you?").content)
-print("Google GenAI LLM: ", gemini_llm.invoke("Hello, how are you?").content)
-print("Groq LLM with llama-3.3-70b: ", groq_llm_70b.invoke("Hello, how are you?").content)
+#read the file, validate and convert it to text
+def validate_and_read_doc(file_path):
+    if not file_path.lower().endswith(".docx"):
+        return "Invalid file format. Please upload a .docx file."
+    try:
+        doc = Document(file_path)
+        text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+        print("Validation Done")
+        return text
+    except Exception as e:
+        return f"Failed to read the document: {e}"
+    
+# check if the file is valid and read it   
+print("Doc reader check: ", validate_and_read_doc("Python Gen AI SRD backend 14th 18th Apr (1).docx"))
