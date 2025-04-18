@@ -6,3 +6,12 @@ langchain-google-genai
 python-docx
 matplotlib
 networkx
+pytest
+unicorn
+langsmith
+sqlalchemy
+fastapi
+uvicorn
+psycopg2
+psycopg2-binary
+psycopg[binary,pool]

@@ -1,0 +1,63 @@
+app/main.py: 
+    summary: Main application file for the LMS and Pods API.
+    description: This file initializes the FastAPI application, configures CORS, includes API routers, and defines the root endpoint.
+    endpoints: [{'path': '/', 'method': 'GET', 'summary': 'Root endpoint.', 'description': 'Returns a welcome message.', 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'message': 'Welcome to the LMS and Pods API'}}}}]}]
+    dependencies: ['fastapi', 'fastapi.middleware.cors', 'dotenv', 'app.api.routes.dashboard_tiles', 'app.api.routes.lms_leaves_apply', 'app.api.routes.lms_leaves_approve', 'app.api.routes.pods_details', 'app.api.routes.pods_recommend', 'app.api.routes.auth_login', 'app.api.routes.auth_user']
+    configuration: 
+        CORS: 
+            allow_origins: ['*']
+            allow_credentials: True
+            allow_methods: ['*']
+            allow_headers: ['*']
+        Logging: 
+            level: INFO
+app/api/routes/dashboard_tiles.py: 
+    summary: API router for dashboard tiles.
+    description: This file defines the endpoint for retrieving dashboard tiles, requiring authentication.
+    endpoints: [{'path': '/api/dashboard/tiles', 'method': 'GET', 'summary': 'Returns dashboard tiles. Requires authentication.', 'description': 'Retrieves a list of dashboard tiles, each containing a title and a count. Authentication is required to access this endpoint.', 'dependencies': ['app.services.auth_service.get_current_user'], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': [{'title': 'Leaves Applied', 'count': 10}, {'title': 'Pods Created', 'count': 5}, {'title': 'Users Active', 'count': 25}]}}}]}]
+app/api/routes/lms_leaves_apply.py: 
+    summary: API router for applying for leaves.
+    description: This file defines the endpoint for applying for a leave, requiring authentication.
+    endpoints: [{'path': '/api/lms/leaves/apply', 'method': 'POST', 'summary': 'Applies for a leave. Requires authentication.', 'description': 'Submits a leave application for the currently authenticated user.', 'dependencies': ['app.services.auth_service.get_current_user'], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'message': 'Leave application submitted for user user@example.com'}}}}]}]
+app/api/routes/lms_leaves_approve.py: 
+    summary: API router for approving leaves.
+    description: This file defines the endpoint for approving a leave, requiring authentication and manager role.
+    endpoints: [{'path': '/api/lms/leaves/{leave_id}/approve', 'method': 'PATCH', 'summary': 'Approves a leave. Requires authentication.', 'description': "Approves a specific leave, identified by its ID. Requires authentication and the user must have the 'manager' role.", 'dependencies': ['app.services.auth_service.get_current_user'], 'parameters': [{'name': 'leave_id', 'in': 'path', 'required': True, 'schema': {'type': 'integer'}, 'description': 'The ID of the leave to approve.'}], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'message': 'Leave 123 approved'}}}}, {'status_code': 403, 'description': 'Insufficient permissions.', 'content': {'application/json': {'example': {'detail': 'Insufficient permissions'}}}}]}]
+app/api/routes/pods_details.py: 
+    summary: API router for pod details.
+    description: This file defines the endpoint for retrieving pod details, requiring authentication.
+    endpoints: [{'path': '/api/pods/{pod_id}/details', 'method': 'GET', 'summary': 'Returns pod details. Requires authentication.', 'description': 'Retrieves details for a specific pod, identified by its ID. Authentication is required to access this endpoint.', 'dependencies': ['app.services.auth_service.get_current_user'], 'parameters': [{'name': 'pod_id', 'in': 'path', 'required': True, 'schema': {'type': 'integer'}, 'description': 'The ID of the pod to retrieve details for.'}], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'pod_id': 123, 'name': 'Pod 123', 'members': ['user1', 'user2']}}}}]}]
+app/api/routes/pods_recommend.py: 
+    summary: API router for recommending pods.
+    description: This file defines the endpoint for recommending a pod, requiring authentication.
+    endpoints: [{'path': '/api/pods/{pod_id}/recommend', 'method': 'POST', 'summary': 'Recommends a pod. Requires authentication.', 'description': 'Recommends a specific pod, identified by its ID, to the currently authenticated user.', 'dependencies': ['app.services.auth_service.get_current_user'], 'parameters': [{'name': 'pod_id', 'in': 'path', 'required': True, 'schema': {'type': 'integer'}, 'description': 'The ID of the pod to recommend.'}], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'message': 'Pod 123 recommended to user user@example.com'}}}}]}]
+app/api/routes/auth_login.py: 
+    summary: API router for user login.
+    description: This file defines the endpoint for logging in a user and obtaining a JWT token.
+    endpoints: [{'path': '/api/auth/login', 'method': 'POST', 'summary': 'Logs in a user.', 'description': 'Authenticates a user based on provided credentials and returns a JWT token upon successful authentication.', 'requestBody': {'description': 'User credentials (email and password).', 'required': True, 'content': {'application/json': {'example': {'email': 'user@example.com', 'password': 'password'}}}}, 'responses': [{'status_code': 200, 'description': 'Successful login.', 'content': {'application/json': {'example': {'access_token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJleHAiOjE2ODg4ODg4ODh9.signature', 'token_type': 'bearer'}}}}, {'status_code': 401, 'description': 'Invalid credentials.', 'content': {'application/json': {'example': {'detail': 'Invalid credentials'}}}}]}]
+app/api/routes/auth_user.py: 
+    summary: API router for retrieving user information.
+    description: This file defines the endpoint for retrieving user information, requiring authentication.
+    endpoints: [{'path': '/api/auth/user', 'method': 'GET', 'summary': 'Returns user information. Requires authentication.', 'description': 'Retrieves information about the currently authenticated user.', 'dependencies': ['app.services.auth_service.get_current_user'], 'responses': [{'status_code': 200, 'description': 'Successful response.', 'content': {'application/json': {'example': {'email': 'user@example.com', 'role': 'user'}}}}]}]
+app/models/leaves.py: 
+    summary: Pydantic model for Leave.
+    description: Defines the structure of a Leave object.
+    attributes: [{'name': 'id', 'type': 'int', 'description': 'The ID of the leave.'}, {'name': 'start_date', 'type': 'str', 'description': 'The start date of the leave.'}, {'name': 'end_date', 'type': 'str', 'description': 'The end date of the leave.'}, {'name': 'reason', 'type': 'str', 'description': 'The reason for the leave.'}, {'name': 'status', 'type': 'str', 'description': 'The status of the leave.'}]
+app/models/pods.py: 
+    summary: Pydantic model for Pod.
+    description: Defines the structure of a Pod object.
+    attributes: [{'name': 'id', 'type': 'int', 'description': 'The ID of the pod.'}, {'name': 'name', 'type': 'str', 'description': 'The name of the pod.'}, {'name': 'members', 'type': 'List[str]', 'description': 'A list of member emails in the pod.'}]
+app/models/users.py: 
+    summary: Pydantic model for User.
+    description: Defines the structure of a User object.
+    attributes: [{'name': 'id', 'type': 'int', 'description': 'The ID of the user.'}, {'name': 'name', 'type': 'str', 'description': 'The name of the user.'}, {'name': 'role', 'type': 'str', 'description': 'The role of the user.'}, {'name': 'email', 'type': 'str', 'description': 'The email of the user.'}]
+app/database.py: 
+    summary: Database configuration and session management.
+    description: This file configures the database connection using SQLAlchemy and provides a dependency for accessing the database session.
+    components: [{'name': 'DATABASE_URL', 'type': 'string', 'description': 'The database connection URL, constructed from environment variables.'}, {'name': 'engine', 'type': 'sqlalchemy.engine', 'description': 'The SQLAlchemy engine for connecting to the database.'}, {'name': 'SessionLocal', 'type': 'sqlalchemy.orm.sessionmaker', 'description': 'A session factory for creating database sessions.'}, {'name': 'Base', 'type': 'sqlalchemy.ext.declarative.declarative_base', 'description': 'The base class for declarative models.'}, {'name': 'get_db', 'type': 'function', 'description': 'A dependency that yields a database session and closes it after use.'}]
+    dependencies: ['sqlalchemy', 'sqlalchemy.ext.declarative', 'sqlalchemy.orm']
+app/services/auth_service.py: 
+    summary: Authentication service.
+    description: This file provides authentication-related functions, including user authentication, JWT token creation, and user retrieval from JWT token.
+    components: [{'name': 'users', 'type': 'list', 'description': 'Dummy user data (replace with database interaction).'}, {'name': 'SECRET_KEY', 'type': 'string', 'description': 'Secret key for JWT encoding.'}, {'name': 'ALGORITHM', 'type': 'string', 'description': 'Algorithm used for JWT encoding.'}, {'name': 'ACCESS_TOKEN_EXPIRE_MINUTES', 'type': 'int', 'description': 'Expiration time for access tokens in minutes.'}, {'name': 'crypt_context', 'type': 'passlib.context.CryptContext', 'description': 'Context for password hashing.'}, {'name': 'oauth2_scheme', 'type': 'fastapi.security.OAuth2PasswordBearer', 'description': 'OAuth2 password bearer scheme.'}, {'name': 'User', 'type': 'pydantic.BaseModel', 'description': 'Pydantic model for User.'}, {'name': 'verify_password', 'type': 'function', 'description': 'Verifies a plain password against a hashed password.'}, {'name': 'get_password_hash', 'type': 'function', 'description': 'Hashes a password.'}, {'name': 'authenticate_user', 'type': 'async function', 'description': 'Authenticates a user based on email and password.'}, {'name': 'create_jwt_token', 'type': 'function', 'description': 'Creates a JWT token.'}, {'name': 'get_current_user', 'type': 'async function', 'description': 'Retrieves the current user from the JWT token.'}]
+    dependencies: ['fastapi', 'fastapi.security', 'jose', 'passlib', 'pydantic']
