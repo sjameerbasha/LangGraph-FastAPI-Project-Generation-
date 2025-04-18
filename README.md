@@ -15,25 +15,25 @@ This project is a backend REST API built using **FastAPI**, designed to be modul
 - **Pydantic** – Data validation and parsing
 
 ## 🗂️ Project Structure
-project_root/
-│── app/
-│   ├── api/
-│   │   ├── routes/
-│   │   │   ├── user.py
-│   │   │   ├── item.py
-│   │   │   └── __init__.py
-│   ├── models/
-│   │   ├── user.py
-│   │   ├── item.py
-│   │   └── __init__.py
-│   ├── services/
-│   ├── database.py
-│   ├── main.py
-│── tests/
-│── Dockerfile
-│── requirements.txt
-│── .env
-│── README.md
+                          project_root/
+                          │── app/
+                          │   ├── api/
+                          │   │   ├── routes/
+                          │   │   │   ├── user.py
+                          │   │   │   ├── item.py
+                          │   │   │   └── __init__.py
+                          │   ├── models/
+                          │   │   ├── user.py
+                          │   │   ├── item.py
+                          │   │   └── __init__.py
+                          │   ├── services/
+                          │   ├── database.py
+                          │   ├── main.py
+                          │── tests/
+                          │── Dockerfile
+                          │── requirements.txt
+                          │── .env
+                          │── README.md
 
 ## 🚀 Getting Started
 
@@ -42,23 +42,29 @@ project_root/
 ```bash
 git clone https://github.com/sjameerbasha/LangGraph-FastAPI-Project-Generation-/
 cd LangGraph-FastAPI-Project-Generation-
+```
 
 ### 2. Create and Activate a Virtual Environment
 ```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
 ### 3. Install Dependencies
 ```bash
+pip install -r requirements.txt
+```
 
 ### 4. Set Up Environment Variables
 Create a .env file in the project root:
 ```bash
 DATABASE_URL=postgresql://user:password@localhost:5432/mydatabase
+```
 
 ### 5. Run the Application
 ```bash
 python langgraph_pipeline_main.py
+```
 
 ##  ✅ Features
 - Clean, modular architecture
