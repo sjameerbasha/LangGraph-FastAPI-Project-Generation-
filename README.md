@@ -1,4 +1,4 @@
-# 🚀 FastAPI Backend Project
+# 🚀 FastAPI Backend Project Generation using LangGraph
 
 ## 📌 Overview
 
